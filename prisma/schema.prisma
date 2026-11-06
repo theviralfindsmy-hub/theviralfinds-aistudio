@@ -1,0 +1,823 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ──────────────────────────────────────────────────────
+
+enum LinkStatus {
+  active
+  paused
+  expired
+}
+
+enum CampaignStatus {
+  active
+  paused
+  completed
+}
+
+enum ConversionStatus {
+  pending
+  confirmed
+  rejected
+  paid
+}
+
+enum PayoutStatus {
+  pending
+  processing
+  completed
+  failed
+}
+
+enum GoalStatus {
+  active
+  achieved
+  failed
+}
+
+enum GoalPeriod {
+  monthly
+  weekly
+  yearly
+  custom
+}
+
+enum UserRole {
+  admin
+  affiliate
+  viewer
+}
+
+enum HermesSkillStatus {
+  active
+  draft
+  archived
+  learning
+  paused
+}
+
+// ─── Models ─────────────────────────────────────────────────────
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String
+  passwordHash  String   @default("demo")
+  role          UserRole @default(affiliate)
+  avatarUrl     String?
+  image         String?
+  emailVerified DateTime?
+  shopeeAffId   String?
+  isActive      Boolean  @default(true)
+  lastLoginAt   DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  links         AffiliateLink[]
+  clickRecords  ClickRecord[]
+  accounts      Account[]
+  sessions      Session[]
+
+  @@index([email])
+  @@index([role])
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model AffiliateLink {
+  id                String        @id @default(cuid())
+  name              String
+  productUrl        String
+  affiliateUrl      String
+  productId         String?
+  productName       String?
+  productImage      String?
+  productPrice      Decimal?
+  commission        Decimal?
+  commissionRate    Decimal?      @default(5)
+  category          String?
+  campaignId        String?
+  userId            String?
+  clicks            Int           @default(0)
+  conversions       Int           @default(0)
+  earnings          Decimal       @default(0)
+  ctr               Decimal?      @default(0)
+  status            LinkStatus    @default(active)
+  shortCode         String        @unique
+  expiresAt         DateTime?
+  tags              String?
+  campaign          Campaign?     @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  user              User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  clickRecords      ClickRecord[]
+  conversionRecords Conversion[]
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  @@index([status])
+  @@index([campaignId])
+  @@index([category])
+  @@index([createdAt])
+  @@index([userId])
+  @@map("affiliate_links")
+}
+
+model Campaign {
+  id          String          @id @default(cuid())
+  name        String
+  description String?
+  status      CampaignStatus  @default(active)
+  budget      Decimal?
+  spent       Decimal         @default(0)
+  startDate   DateTime?
+  endDate     DateTime?
+  links       AffiliateLink[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@index([status])
+  @@map("campaigns")
+}
+
+model ClickRecord {
+  id            String        @id @default(cuid())
+  linkId        String
+  userId        String?
+  affiliateLink AffiliateLink @relation(fields: [linkId], references: [id], onDelete: Cascade)
+  user          User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  ip            String?
+  country       String?
+  referer       String?
+  device        String?
+  browser       String?
+  os            String?
+  converted     Boolean       @default(false)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([linkId])
+  @@index([createdAt])
+  @@index([device])
+  @@index([converted])
+  @@index([country])
+  @@map("click_records")
+}
+
+model Conversion {
+  id            String          @id @default(cuid())
+  linkId        String
+  affiliateLink AffiliateLink   @relation(fields: [linkId], references: [id], onDelete: Cascade)
+  orderId       String?
+  amount        Decimal
+  commission    Decimal
+  status        ConversionStatus @default(pending)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  @@index([linkId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("conversions")
+}
+
+model Payout {
+  id          String       @id @default(cuid())
+  userId      String?
+  method      String       @default("bank_transfer")
+  amount      Decimal
+  status      PayoutStatus @default(pending)
+  bankName    String?
+  accountNo   String?
+  accountName String?
+  requestedAt DateTime     @default(now())
+  processedAt DateTime?
+  note        String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([status])
+  @@index([requestedAt])
+  @@map("payouts")
+}
+
+model AppSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("app_settings")
+}
+
+model EarningGoal {
+  id            String     @id @default(cuid())
+  name          String
+  targetAmount  Decimal
+  currentAmount Decimal    @default(0)
+  period        GoalPeriod @default(monthly)
+  startDate     DateTime   @default(now())
+  endDate       DateTime?
+  status        GoalStatus @default(active)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  @@index([status])
+  @@index([period])
+  @@map("earning_goals")
+}
+
+model Notification {
+  id          String   @id @default(cuid())
+  type        String   @default("system")
+  title       String
+  description String
+  read        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([read])
+  @@index([createdAt])
+  @@index([type])
+  @@map("notifications")
+}
+
+model AgentMemory {
+  id        String   @id @default(cuid())
+  agentId   String
+  sessionId String?
+  role      String
+  content   String
+  metadata  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([agentId])
+  @@index([sessionId])
+  @@index([createdAt])
+  @@map("agent_memories")
+}
+
+model Achievement {
+  id          String   @id @default(cuid())
+  userId      String?
+  type        String
+  title       String
+  description String
+  icon        String
+  earnedAt    DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([type])
+  @@index([earnedAt])
+  @@map("achievements")
+}
+
+model LeaderboardEntry {
+  id               String   @id @default(cuid())
+  userId           String?
+  userName         String
+  totalEarnings    Decimal  @default(0)
+  totalClicks      Int      @default(0)
+  totalConversions Int      @default(0)
+  period           String
+  rank             Int
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([period])
+  @@index([rank])
+  @@unique([userId, period])
+  @@map("leaderboard_entries")
+}
+
+model Referral {
+  id            String    @id @default(cuid())
+  referrerId    String?
+  referredEmail String
+  referredName  String?
+  status        String    @default("pending")
+  commission    Decimal?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([referrerId])
+  @@index([status])
+  @@map("referrals")
+}
+
+// ─── Hermes Agent Models ────────────────────────────────────────
+
+model HermesConnection {
+  id            String   @id @default(cuid())
+  name          String
+  endpoint      String
+  apiKey        String?
+  model         String   @default("hermes-3")
+  isActive      Boolean  @default(false)
+  lastConnected DateTime?
+  status        String   @default("disconnected")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("hermes_connections")
+}
+
+model HermesConversation {
+  id            String   @id @default(cuid())
+  connectionId  String
+  title         String
+  summary       String?
+  messageCount  Int      @default(0)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  messages HermesMessage[]
+
+  @@index([connectionId])
+  @@index([createdAt])
+  @@map("hermes_conversations")
+}
+
+model HermesMessage {
+  id             String   @id @default(cuid())
+  conversationId String
+  role           String   // system, user, assistant
+  content        String
+  tokens         Int?
+  metadata       String?  // JSON
+  createdAt      DateTime @default(now())
+
+  conversation HermesConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([createdAt])
+  @@map("hermes_messages")
+}
+
+model HermesSkill {
+  id          String            @id @default(cuid())
+  name        String
+  description String
+  category    String
+  code        String
+  trigger     String?
+  status      HermesSkillStatus @default(draft)
+  usageCount  Int               @default(0)
+  successRate Decimal?          @default(0)
+  version     Int               @default(1)
+  learnedFrom String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@index([category])
+  @@index([status])
+  @@map("hermes_skills")
+}
+
+model HermesTask {
+  id           String   @id @default(cuid())
+  name         String
+  description  String?
+  schedule     String?  // cron expression
+  skillId      String?
+  status       String   @default("scheduled") // scheduled, running, completed, failed
+  lastRunAt    DateTime?
+  nextRunAt    DateTime?
+  runCount     Int      @default(0)
+  lastResult   String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([status])
+  @@index([nextRunAt])
+  @@map("hermes_tasks")
+}
+
+model HermesInsight {
+  id          String   @id @default(cuid())
+  type        String   // trend, opportunity, alert, recommendation
+  title       String
+  description String
+  severity    String   @default("info") // info, warning, critical
+  data        String?  // JSON
+  isRead      Boolean  @default(false)
+  isActioned  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([type])
+  @@index([isRead])
+  @@index([createdAt])
+  @@map("hermes_insights")
+}
+
+model ScheduledPost {
+  id            String    @id @default(cuid())
+  caption       String
+  platforms     String    // JSON array of platform names
+  productUrl    String?
+  affiliateLink String?
+  imageUrl      String?
+  hashtags      String?   // JSON array
+  status        String    @default("scheduled") // scheduled, publishing, published, failed, partial
+  scheduledAt   DateTime
+  publishedAt   DateTime?
+  result        String?   // JSON with platform results
+  retryCount    Int       @default(0)
+  errorMessage  String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([status])
+  @@index([scheduledAt])
+  @@map("scheduled_posts")
+}
+
+model ContentLibrary {
+  id          String   @id @default(cuid())
+  type        String   // caption, script, hashtags, live_script, review, comparison
+  platform    String   // tiktok, instagram, facebook, youtube, shopee_live
+  niche       String?
+  product     String?
+  content     String
+  language    String   @default("manglish") // english, bahasa, manglish
+  tone        String   @default("casual") // casual, professional, excited, funny
+  usageCount  Int      @default(0)
+  isFavorite  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([type])
+  @@index([platform])
+  @@index([createdAt])
+  @@index([isFavorite])
+  @@map("content_library")
+}
+
+// ─── Social Account Models (Task 1.2) ──────────────────────────
+
+model SocialAccount {
+  id               String    @id @default(cuid())
+  userId           String
+  platform         String    // facebook, instagram, tiktok, twitter
+  platformUserId   String
+  platformUsername String?
+  accessToken      String
+  refreshToken     String?
+  expiresAt        DateTime?
+  isConnected      Boolean   @default(true)
+  isDemo           Boolean   @default(false)
+  lastUsedAt       DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@unique([userId, platform])
+  @@index([userId])
+  @@index([platform])
+  @@map("social_accounts")
+}
+
+model PostLog {
+  id              String   @id @default(cuid())
+  scheduledPostId String
+  platform        String
+  status          String   @default("pending") // pending, publishing, published, failed
+  attempt         Int      @default(0)
+  maxAttempts     Int      @default(3)
+  platformPostId  String?
+  platformUrl     String?
+  errorMessage    String?
+  publishedAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([scheduledPostId])
+  @@index([platform])
+  @@index([status])
+  @@map("post_logs")
+}
+
+// ─── Extended Models for Full Functionality ──────────────────────
+
+model ApiKey {
+  id          String   @id @default(cuid())
+  name        String
+  key         String   @unique
+  secret      String
+  userId      String?
+  permissions String   @default("read") // JSON: ["read", "write", "admin"]
+  status      String   @default("active") // active, revoked, expired
+  lastUsedAt  DateTime?
+  expiresAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  usageLogs ApiKeyUsage[]
+
+  @@index([key])
+  @@index([status])
+  @@index([userId])
+  @@map("api_keys")
+}
+
+model ApiKeyUsage {
+  id        String   @id @default(cuid())
+  apiKeyId  String
+  endpoint  String
+  method    String
+  statusCode Int
+  latencyMs Int
+  createdAt DateTime @default(now())
+
+  apiKey ApiKey @relation(fields: [apiKeyId], references: [id], onDelete: Cascade)
+
+  @@index([apiKeyId])
+  @@index([createdAt])
+  @@index([endpoint])
+  @@map("api_key_usage")
+}
+
+model Team {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  ownerId     String
+  plan        String   @default("free") // free, pro, business
+  maxMembers  Int      @default(5)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members TeamMember[]
+
+  @@index([ownerId])
+  @@map("teams")
+}
+
+model TeamMember {
+  id       String @id @default(cuid())
+  teamId   String
+  userId   String
+  role     String @default("member") // owner, admin, member, viewer
+  status   String @default("active") // active, pending, removed
+  joinedAt DateTime @default(now())
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, userId])
+  @@index([teamId])
+  @@index([userId])
+  @@map("team_members")
+}
+
+model TeamInvitation {
+  id        String   @id @default(cuid())
+  teamId    String
+  email     String
+  role      String   @default("member")
+  token     String   @unique
+  status    String   @default("pending") // pending, accepted, declined, expired
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([teamId])
+  @@index([email])
+  @@index([token])
+  @@map("team_invitations")
+}
+
+model WhiteLabelConfig {
+  id            String   @id @default(cuid())
+  name          String
+  domain        String   @unique
+  logoUrl       String?
+  primaryColor  String   @default("#0066FF")
+  accentColor   String   @default("#CCFF00")
+  companyName   String
+  supportEmail  String?
+  headTitle     String?
+  customCss     String?
+  emailTemplate String?
+  status        String   @default("draft") // draft, active, suspended
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([domain])
+  @@index([status])
+  @@map("whitelabel_configs")
+}
+
+model MarketplaceListing {
+  id          String   @id @default(cuid())
+  sellerId    String
+  title       String
+  description String
+  category    String
+  niche       String?
+  platform    String?
+  price       Decimal
+  rating      Decimal? @default(0)
+  downloadCount Int    @default(0)
+  content     String   // JSON: the actual listing data (templates, scripts, etc.)
+  tags        String?  // JSON array
+  status      String   @default("active") // active, paused, archived
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  reviews MarketplaceReview[]
+
+  @@index([sellerId])
+  @@index([category])
+  @@index([status])
+  @@map("marketplace_listings")
+}
+
+model MarketplaceReview {
+  id          String   @id @default(cuid())
+  listingId   String
+  userId      String?
+  userName    String
+  rating      Int
+  comment     String?
+  createdAt   DateTime @default(now())
+
+  listing MarketplaceListing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@index([listingId])
+  @@index([userId])
+  @@map("marketplace_reviews")
+}
+
+model Subscription {
+  id            String   @id @default(cuid())
+  userId        String
+  plan          String   @default("free") // free, pro, business, enterprise
+  status        String   @default("active") // active, cancelled, expired, past_due
+  startDate     DateTime @default(now())
+  endDate       DateTime?
+  cancelAtPeriodEnd Boolean @default(false)
+  checkoutUrl   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([userId])
+  @@index([plan])
+  @@index([status])
+  @@map("subscriptions")
+}
+
+model UsageTracking {
+  id          String   @id @default(cuid())
+  userId      String
+  period      String   // "2025-01" format
+  productsSearched Int @default(0)
+  linksCreated     Int @default(0)
+  contentGenerated Int @default(0)
+  postsPublished   Int @default(0)
+  aiQueries        Int @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, period])
+  @@index([userId])
+  @@map("usage_tracking")
+}
+
+model AbTest {
+  id          String   @id @default(cuid())
+  name        String
+  linkId      String?
+  variants    String   // JSON: [{name, content, clicks, conversions}]
+  status      String   @default("running") // draft, running, completed
+  winnerIndex Int?
+  startDate   DateTime @default(now())
+  endDate     DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([status])
+  @@index([linkId])
+  @@map("ab_tests")
+}
+
+model TrendKeyword {
+  id          String   @id @default(cuid())
+  keyword     String
+  category    String?
+  platform    String   @default("shopee")
+  searchVolume Int    @default(0)
+  growthRate  Decimal? @default(0)
+  trend       String   @default("rising") // rising, stable, declining
+  period      String   // "2025-W01" format
+  createdAt   DateTime @default(now())
+
+  @@unique([keyword, platform, period])
+  @@index([keyword])
+  @@index([platform])
+  @@index([period])
+  @@map("trend_keywords")
+}
+
+model CompetitorWatch {
+  id            String   @id @default(cuid())
+  userId        String?
+  shopName      String
+  platform      String   @default("shopee")
+  shopUrl       String?
+  topProduct    String?
+  avgPrice      Decimal?
+  followerCount Int?
+  lastChecked   DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([userId])
+  @@index([platform])
+  @@map("competitor_watches")
+}
+
+model LiveSession {
+  id          String   @id @default(cuid())
+  title       String
+  status      String   @default("scheduled") // scheduled, live, completed, cancelled
+  scheduledAt DateTime
+  startedAt   DateTime?
+  endedAt     DateTime?
+  viewers     Int      @default(0)
+  peakViewers Int      @default(0)
+  likes       Int      @default(0)
+  comments    Int      @default(0)
+  shares      Int      @default(0)
+  revenue     Decimal  @default(0)
+  products    String?  // JSON array of product IDs
+  script      String?  // JSON: live script data
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([status])
+  @@index([scheduledAt])
+  @@map("live_sessions")
+}
+
+model AlertPreference {
+  id          String   @id @default(cuid())
+  userId      String
+  alertType   String   // commission_xtra, price_drop, trending, competitor
+  enabled     Boolean  @default(true)
+  threshold   String?  // JSON: threshold config
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, alertType])
+  @@index([userId])
+  @@map("alert_preferences")
+}

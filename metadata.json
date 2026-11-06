@@ -1,0 +1,8 @@
+{
+  "name": "TheViralFindsMY",
+  "description": "AI-powered Shopee affiliate management platform with HERMES Agent integration. Track earnings, manage links, analyze performance, and automate with AI.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

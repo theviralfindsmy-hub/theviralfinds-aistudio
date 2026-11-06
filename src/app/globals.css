@@ -1,0 +1,653 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  /* Brand: Electric Blue — THEVIRALFINDS */
+  --color-shopee: var(--shopee);
+  --color-shopee-dark: var(--shopee-dark);
+  --color-shopee-light: var(--shopee-light);
+  /* Brand: Acid Lime accent */
+  --color-lime: var(--lime);
+  --color-lime-dark: var(--lime-dark);
+  --color-lime-light: var(--lime-light);
+  /* Hermes AI */
+  --color-hermes: var(--hermes);
+  --color-hermes-dark: var(--hermes-dark);
+  --color-hermes-light: var(--hermes-light);
+  /* Profit / Earnings */
+  --color-profit: var(--profit);
+  --color-profit-dark: var(--profit-dark);
+  --color-profit-light: var(--profit-light);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+/* ============================================================
+   LIGHT MODE — Minimalist Brutalism
+   Electric Blue (#0066FF) + Acid Lime (#CCFF00) + Stark White
+   ============================================================ */
+:root {
+  --radius: 0.5rem; /* Brutalist: slightly sharper corners */
+  --background: oklch(0.985 0.002 264);      /* near-white with cool undertone */
+  --foreground: oklch(0.13 0.03 264);          /* deep navy-black */
+  --card: oklch(1 0 0);                         /* pure white */
+  --card-foreground: oklch(0.13 0.03 264);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.13 0.03 264);
+  --primary: oklch(0.546 0.232 264);            /* Electric Blue #0066FF */
+  --primary-foreground: oklch(1 0 0);           /* white on blue */
+  --secondary: oklch(0.965 0.01 264);           /* very light blue-gray */
+  --secondary-foreground: oklch(0.2 0.03 264);
+  --muted: oklch(0.96 0.008 264);               /* light cool gray */
+  --muted-foreground: oklch(0.48 0.015 264);
+  --accent: oklch(0.965 0.04 128);              /* light lime tint */
+  --accent-foreground: oklch(0.2 0.04 128);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.915 0.01 264);              /* subtle blue-gray border */
+  --input: oklch(0.915 0.01 264);
+  --ring: oklch(0.546 0.232 264);               /* Electric Blue ring */
+  --chart-1: oklch(0.546 0.232 264);            /* Electric Blue */
+  --chart-2: oklch(0.956 0.218 128);            /* Acid Lime */
+  --chart-3: oklch(0.7 0.18 280);               /* Violet */
+  --chart-4: oklch(0.75 0.15 80);               /* Warm neutral */
+  --chart-5: oklch(0.65 0.2 350);               /* Rose */
+  --sidebar: oklch(0.975 0.008 264);            /* slightly cool sidebar bg */
+  --sidebar-foreground: oklch(0.13 0.03 264);
+  --sidebar-primary: oklch(0.546 0.232 264);    /* Electric Blue */
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.95 0.02 264);
+  --sidebar-accent-foreground: oklch(0.2 0.03 264);
+  --sidebar-border: oklch(0.915 0.01 264);
+  --sidebar-ring: oklch(0.546 0.232 264);
+  /* Brand: Electric Blue */
+  --shopee: oklch(0.546 0.232 264);             /* #0066FF */
+  --shopee-dark: oklch(0.458 0.207 264);        /* #0052CC */
+  --shopee-light: oklch(0.94 0.04 264);         /* #E6F0FF */
+  /* Brand: Acid Lime accent */
+  --lime: oklch(0.956 0.218 128);               /* #CCFF00 */
+  --lime-dark: oklch(0.48 0.16 132);            /* #99CC00 */
+  --lime-light: oklch(0.985 0.08 128);          /* #F5FFD6 */
+  /* Hermes AI */
+  --hermes: oklch(0.65 0.22 280);               /* electric violet */
+  --hermes-dark: oklch(0.55 0.22 278);
+  --hermes-light: oklch(0.93 0.05 280);
+  /* Profit */
+  --profit: oklch(0.75 0.22 145);               /* green */
+  --profit-dark: oklch(0.62 0.22 143);
+  --profit-light: oklch(0.94 0.06 145);
+}
+
+/* ============================================================
+   DARK MODE — Brutalist Dark
+   Deep Navy + Electric Blue + Acid Lime
+   ============================================================ */
+.dark {
+  --background: oklch(0.13 0.025 264);         /* deep navy #0A1628 */
+  --foreground: oklch(0.96 0.005 264);          /* cool white */
+  --card: oklch(0.17 0.03 264);                 /* navy card #0F1F38 */
+  --card-foreground: oklch(0.96 0.005 264);
+  --popover: oklch(0.17 0.03 264);
+  --popover-foreground: oklch(0.96 0.005 264);
+  --primary: oklch(0.53 0.232 264);             /* brighter blue for dark */
+  --primary-foreground: oklch(0.98 0 0);        /* white on blue */
+  --secondary: oklch(0.22 0.025 264);           /* dark blue-gray */
+  --secondary-foreground: oklch(0.96 0.005 264);
+  --muted: oklch(0.22 0.025 264);
+  --muted-foreground: oklch(0.70 0.015 264);
+  --accent: oklch(0.25 0.04 128);               /* dark lime tint */
+  --accent-foreground: oklch(0.96 0.005 264);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.6 0.232 264);
+  --chart-1: oklch(0.6 0.232 264);
+  --chart-2: oklch(0.956 0.218 128);
+  --chart-3: oklch(0.7 0.2 280);
+  --chart-4: oklch(0.75 0.15 80);
+  --chart-5: oklch(0.7 0.2 350);
+  --sidebar: oklch(0.15 0.028 264);             /* deep navy sidebar */
+  --sidebar-foreground: oklch(0.96 0.005 264);
+  --sidebar-primary: oklch(0.6 0.232 264);
+  --sidebar-primary-foreground: oklch(0.98 0 0);
+  --sidebar-accent: oklch(0.22 0.03 264);
+  --sidebar-accent-foreground: oklch(0.96 0.005 264);
+  --sidebar-border: oklch(1 0 0 / 8%);
+  --sidebar-ring: oklch(0.6 0.232 264);
+  /* Brand: Electric Blue */
+  --shopee: oklch(0.6 0.232 264);
+  --shopee-dark: oklch(0.5 0.21 264);
+  --shopee-light: oklch(0.32 0.06 264);
+  /* Brand: Acid Lime */
+  --lime: oklch(0.956 0.218 128);
+  --lime-dark: oklch(0.85 0.2 128);
+  --lime-light: oklch(0.4 0.08 128);
+  /* Hermes AI */
+  --hermes: oklch(0.7 0.22 280);
+  --hermes-dark: oklch(0.58 0.2 278);
+  --hermes-light: oklch(0.35 0.06 280);
+  /* Profit */
+  --profit: oklch(0.7 0.22 145);
+  --profit-dark: oklch(0.58 0.22 143);
+  --profit-light: oklch(0.35 0.08 145);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  body {
+    @apply bg-background text-foreground;
+    overscroll-behavior-y: none;
+    -webkit-overflow-scrolling: touch;
+    -webkit-tap-highlight-color: transparent;
+    text-rendering: optimizeLegibility;
+    -webkit-touch-callout: none;
+  }
+  input, textarea, [contenteditable="true"], p, li, h1, h2, h3, h4, h5, h6, span {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+  input, select, textarea {
+    font-size: 16px;
+  }
+  @media (min-width: 640px) {
+    input, select, textarea {
+      font-size: inherit;
+    }
+  }
+}
+
+/* Custom Scrollbar — Brutalist thin style */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: oklch(0.546 0.232 264 / 25%);
+  border-radius: 0;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.546 0.232 264 / 50%);
+}
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: oklch(0.6 0.232 264 / 35%);
+}
+
+/* ============================================================
+   ANIMATIONS — Brutalist Glitch + Electric
+   ============================================================ */
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.animate-shimmer {
+  animation: shimmer 2s ease-in-out infinite;
+  background-size: 200% 100%;
+}
+
+/* Electric pulse glow — blue ring */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 8px oklch(0.546 0.232 264 / 20%); }
+  50% { box-shadow: 0 0 24px oklch(0.546 0.232 264 / 45%), 0 0 6px oklch(0.956 0.218 128 / 20%); }
+}
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Acid lime pulse — for CTAs */
+@keyframes lime-pulse {
+  0%, 100% { box-shadow: 0 0 4px oklch(0.956 0.218 128 / 15%); }
+  50% { box-shadow: 0 0 16px oklch(0.956 0.218 128 / 35%), 0 0 4px oklch(0.546 0.232 264 / 15%); }
+}
+.animate-lime-pulse {
+  animation: lime-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.animate-gradient {
+  animation: gradient-shift 8s ease infinite;
+  background-size: 200% 200%;
+}
+
+/* Glitch text effect */
+@keyframes glitch {
+  0% { text-shadow: 2px 0 oklch(0.8 0.2 180), -2px 0 oklch(0.7 0.25 320); }
+  25% { text-shadow: -2px 0 oklch(0.8 0.2 180), 2px 0 oklch(0.7 0.25 320); }
+  50% { text-shadow: 2px 1px oklch(0.8 0.2 180), -2px -1px oklch(0.7 0.25 320); }
+  75% { text-shadow: -1px 0 oklch(0.8 0.2 180), 1px 0 oklch(0.7 0.25 320); }
+  100% { text-shadow: 2px 0 oklch(0.8 0.2 180), -2px 0 oklch(0.7 0.25 320); }
+}
+.glitch-text {
+  animation: glitch 3s ease-in-out infinite;
+}
+
+/* Neon flicker */
+@keyframes neon-flicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+  20%, 24%, 55% { opacity: 0.6; }
+}
+.neon-flicker {
+  animation: neon-flicker 4s ease-in-out infinite;
+}
+
+/* Badge pulse */
+@keyframes badge-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+.badge-pulse {
+  animation: badge-pulse 2s ease-in-out infinite;
+}
+
+/* Bell wiggle — notification ring */
+@keyframes bell-wiggle {
+  0%, 100% { transform: rotate(0); }
+  15%      { transform: rotate(14deg); }
+  30%      { transform: rotate(-12deg); }
+  45%      { transform: rotate(8deg); }
+  60%      { transform: rotate(-6deg); }
+  75%      { transform: rotate(3deg); }
+}
+.animate-bell-wiggle {
+  animation: bell-wiggle 0.6s ease-in-out;
+  transform-origin: top center;
+}
+
+/* Sidebar gradient — cool navy tint */
+.sidebar-gradient {
+  background: linear-gradient(180deg, var(--sidebar) 0%, oklch(0.96 0.008 264) 100%);
+}
+.dark .sidebar-gradient {
+  background: linear-gradient(180deg, var(--sidebar) 0%, oklch(0.14 0.028 264) 100%);
+}
+
+/* Nav item slide — brutalist snap */
+.nav-item-slide {
+  transition: all 0.15s ease-out;
+}
+.nav-item-slide:hover {
+  transform: translateX(3px);
+}
+
+/* Nav glow for active — Electric Blue accent bar */
+.nav-glow {
+  position: relative;
+}
+.nav-glow::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  background: var(--shopee);
+  border-radius: 0;
+}
+
+/* Hermes glow — violet accent bar */
+.hermes-glow {
+  position: relative;
+}
+.hermes-glow::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  background: var(--hermes);
+  border-radius: 0;
+}
+
+/* Chat message animations */
+@keyframes message-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-message-in {
+  animation: message-in 0.3s ease-out;
+}
+
+/* Typing indicator */
+@keyframes typing-dot {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-4px); opacity: 1; }
+}
+.typing-dot:nth-child(1) { animation: typing-dot 1.4s ease-in-out infinite 0s; }
+.typing-dot:nth-child(2) { animation: typing-dot 1.4s ease-in-out infinite 0.2s; }
+.typing-dot:nth-child(3) { animation: typing-dot 1.4s ease-in-out infinite 0.4s; }
+
+/* Safe area for mobile bottom nav */
+.safe-area-inset-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Card hover effect — brutalist sharp shadow */
+.card-hover {
+  transition: all 0.15s ease-out;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 4px 4px 0 oklch(0.13 0.03 264 / 12%);
+}
+.dark .card-hover:hover {
+  box-shadow: 4px 4px 0 oklch(0.546 0.232 264 / 25%);
+}
+
+/* Status colors */
+.status-active { color: oklch(0.75 0.22 145); }
+.status-paused { color: oklch(0.7 0.15 80); }
+.status-expired { color: oklch(0.6 0.2 25); }
+.status-completed { color: oklch(0.6 0.15 240); }
+
+/* ============================================================
+   MOBILE / PWA POLISH
+   ============================================================ */
+
+.safe-area-inset-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.safe-area-inset-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.safe-area-inset-left {
+  padding-left: env(safe-area-inset-left, 0px);
+}
+.safe-area-inset-right {
+  padding-right: env(safe-area-inset-right, 0px);
+}
+.safe-area-inset {
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+.h-safe-top {
+  top: env(safe-area-inset-top, 0px);
+}
+
+@media (max-width: 1023px) {
+  .mobile-nav-spacer {
+    height: calc(3.5rem + env(safe-area-inset-bottom, 0px));
+  }
+  main {
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+  }
+  .no-scrollbar-mobile::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar-mobile {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+.touch-target {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.scroll-container {
+  overscroll-behavior: contain;
+}
+
+@media all and (display-mode: standalone) {
+  body::-webkit-scrollbar {
+    display: none;
+  }
+  body {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .pwa-top-safe {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+:focus-visible {
+  outline: 2px solid var(--shopee);
+  outline-offset: 2px;
+}
+
+img {
+  background-color: var(--muted);
+}
+
+button, a, [role="button"], [role="tab"], [role="menuitem"] {
+  touch-action: manipulation;
+}
+
+img[loading="lazy"] {
+  transition: opacity 0.3s ease;
+}
+
+@media (hover: none) {
+  button:active, a:active, [role="button"]:active {
+    transform: scale(0.97);
+    transition: transform 0.1s ease;
+  }
+}
+
+/* ============================================================
+   P2 CSS IMPROVEMENTS — Glass, Glow, Gradient, Accessibility
+   ============================================================ */
+
+/* 1. Glassmorphism */
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.dark .glass {
+  background: rgba(10, 22, 40, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+.glass-strong {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+.dark .glass-strong {
+  background: rgba(10, 22, 40, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 2. Animated gradient border — uses existing gradient-shift keyframe */
+.gradient-border {
+  position: relative;
+}
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: linear-gradient(120deg, var(--shopee), var(--lime), var(--hermes), var(--shopee));
+  background-size: 300% 300%;
+  animation: gradient-shift 6s ease infinite;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* 3. Glow shadows */
+.glow-shopee { box-shadow: 0 0 20px oklch(0.546 0.232 264 / 18%), 0 0 0 1px oklch(0.546 0.232 264 / 5%); }
+.glow-hermes { box-shadow: 0 0 20px oklch(0.65 0.22 280 / 18%), 0 0 0 1px oklch(0.65 0.22 280 / 5%); }
+.glow-lime { box-shadow: 0 0 20px oklch(0.956 0.218 128 / 18%), 0 0 0 1px oklch(0.956 0.218 128 / 5%); }
+.glow-profit { box-shadow: 0 0 20px oklch(0.75 0.22 145 / 18%), 0 0 0 1px oklch(0.75 0.22 145 / 5%); }
+
+/* 4. Animated gradient text — uses existing gradient-shift keyframe */
+.text-gradient-shopee {
+  background: linear-gradient(120deg, var(--shopee), var(--lime), var(--hermes), var(--shopee));
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-shift 8s ease infinite;
+}
+
+/* 5. Pulse ring animation */
+@keyframes pulse-ring {
+  0% { transform: scale(0.8); opacity: 1; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+.pulse-ring::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: currentColor;
+  animation: pulse-ring 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* 6. Scrollbar glow */
+.scrollbar-glow::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--shopee), var(--hermes));
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.scrollbar-glow::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--lime), var(--shopee));
+  background-clip: padding-box;
+}
+
+/* 7. Soft glow — cycles between hermes and shopee */
+@keyframes soft-glow {
+  0%, 100% { box-shadow: 0 0 24px -6px oklch(0.65 0.22 280 / 25%); }
+  50%      { box-shadow: 0 0 36px -4px oklch(0.546 0.232 264 / 28%); }
+}
+.animate-soft-glow {
+  animation: soft-glow 4s ease-in-out infinite;
+}
+
+/* 8. Shimmer banner — sweeping light effect */
+.shimmer-banner {
+  background-image: linear-gradient(110deg, transparent 30%, oklch(1 0 0 / 8%) 50%, transparent 70%);
+  background-size: 200% 100%;
+  animation: banner-shimmer 4s linear infinite;
+}
+@keyframes banner-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* 9. Reduced motion — respect user preference (CRITICAL for accessibility) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .animate-float,
+  .animate-shimmer,
+  .animate-pulse-glow,
+  .animate-lime-pulse,
+  .animate-soft-glow,
+  .animate-gradient,
+  .animate-bell-wiggle,
+  .glitch-text,
+  .neon-flicker,
+  .badge-pulse,
+  .shimmer-banner,
+  .text-gradient-shopee,
+  .gradient-border::before {
+    animation: none !important;
+  }
+}
+
+/* 10. WCAG AA contrast fixes for glass panels */
+.glass .text-muted-foreground,
+.glass-strong .text-muted-foreground {
+  color: oklch(0.5 0.015 264) !important;
+}
+.dark .glass .text-muted-foreground,
+.dark .glass-strong .text-muted-foreground {
+  color: oklch(0.72 0.01 264) !important;
+}
