@@ -1,0 +1,8 @@
+{
+  "projectId": "18177",
+  "projectSlug": "theviralfinds-aistudio",
+  "clerkOrgId": "org_3LJGOFc4hXOIxkohFwbFkhIXmce",
+  "telemetryBindingId": "86211627-00d3-48dd-ae97-549c979fca85",
+  "runtimeUrl": "http://localhost:3000/api/copilotkit",
+  "apiKeyDirectory": "."
+}

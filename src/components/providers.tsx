@@ -6,6 +6,8 @@ import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider } from '@/components/theme-provider'
 import { RealtimeProvider } from '@/components/realtime/realtime-provider'
 import { Toaster } from '@/components/ui/sonner'
+import { CopilotWrapper } from '@/components/copilot/CopilotWrapper'
+import { CopilotAntigravityHub } from '@/components/copilot/CopilotAntigravityHub'
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -25,7 +27,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <SessionProvider session={null}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <RealtimeProvider>
-            {children}
+            <CopilotWrapper>
+              {children}
+              <CopilotAntigravityHub />
+            </CopilotWrapper>
             <Toaster position="top-right" richColors />
           </RealtimeProvider>
         </ThemeProvider>

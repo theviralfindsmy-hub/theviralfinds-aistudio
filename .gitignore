@@ -74,3 +74,6 @@ search_*.json
 tool-results/
 upload/
 .aistudio/
+
+# Added by CopilotKit CLI: credential files, which must never be committed.
+.env.*
